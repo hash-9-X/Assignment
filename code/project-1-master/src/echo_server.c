@@ -40,11 +40,11 @@ void res(int client_socket,int status,Request*req){
         strcat(str,"\n");
         strcat(str,"\n");
         }//echo the request
-    /*else if(status==400){
+    else if(status==400){
         strcat(str,"HTTP/1.1 400 Bad Request");
         strcat(str,"\n");
         strcat(str,"\n");
-    }*/
+    }
     else {
         strcat(str,req->http_method);
         strcat(str," ");
@@ -70,9 +70,9 @@ void res(int client_socket,int status,Request*req){
 }//check the status and response
 void check(int client_sock,char *buffer,int buff_size){
         Request *req=parse(buffer,buff_size,client_sock);
-        /*if(req==NULL){
+        if(req==NULL){
             res(client_sock,400,req);
-        }*/
+        }
         if(!strcmp(req->http_method,"GET")){
             res(client_sock,1,req);
         }
