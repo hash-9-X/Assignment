@@ -34,20 +34,22 @@ int close_socket(int sock)
 void res(int client_socket,int status,Request*req){
     char *str=(char*)malloc(sizeof(char)*BUF_SIZE);
     if(status==501){
-        strcat(str,"\n");
-        strcat(str,"\n");
         strcat(str,req->http_version);
         strcat(str," ");
         strcat(str,"501 Method Unimplemented");
         strcat(str,"\n");
         strcat(str,"\n");
         }//echo the request
-    else if(status==400){
+    /*else if(status==400){
         strcat(str,"HTTP/1.1 400 Bad Request");
         strcat(str,"\n");
         strcat(str,"\n");
-    }
-    else if(status==1){
+    }*/
+    else {
+        strcat(str,req->http_method);
+        strcat(str," ");
+        strcat(str,"OK");
+        strcat(str,"\n");
         strcat(str,req->http_method);
         strcat(str," ");
         strcat(str,req->http_uri);
@@ -66,12 +68,12 @@ void res(int client_socket,int status,Request*req){
     send(client_socket,str,strlen(str),0);
     free(str);
 }//check the status and response
-void check(int sock,int client_sock,char *buffer,int buff_size){
-        Request *req=parse(buffer,buff_size,sock);
-        if(req==NULL){
+void check(int client_sock,char *buffer,int buff_size){
+        Request *req=parse(buffer,buff_size,client_sock);
+        /*if(req==NULL){
             res(client_sock,400,req);
-        }
-        else if(!strcmp(req->http_method,"GET")){
+        }*/
+        if(!strcmp(req->http_method,"GET")){
             res(client_sock,1,req);
         }
         else if(!strcmp(req->http_method,"POST")){
@@ -80,10 +82,10 @@ void check(int sock,int client_sock,char *buffer,int buff_size){
         else if(!strcmp(req->http_method,"HEAD")){
             res(client_sock,1,req);
         }
-        else 
+        else
         {res(client_sock,501,req);
         }
-                
+
 }//check the method the request used
 int main(int argc, char* argv[])
 {
@@ -94,7 +96,7 @@ int main(int argc, char* argv[])
     char buf[BUF_SIZE];
 
     fprintf(stdout, "----- Echo Server -----\n");
-    
+
     /* all networked programs must create a socket */
     if ((sock = socket(PF_INET, SOCK_STREAM, 0)) == -1)
     {
@@ -122,7 +124,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     //int response_get(int clientf)
-    
+
 
     /* finally, loop waiting for input and then write it back */
     while (1)
@@ -140,7 +142,7 @@ int main(int argc, char* argv[])
 
         while((readret = recv(client_sock, buf, BUF_SIZE, 0)) >= 1)
         {
-            check(sock,client_sock,buf,readret);
+            check(client_sock,buf,readret);
             /*if (send(client_sock, buf, readret, 0) != readret)
             {
                 close_socket(client_sock);
@@ -149,7 +151,7 @@ int main(int argc, char* argv[])
                 return EXIT_FAILURE;
             }*/
             memset(buf, 0, BUF_SIZE);
-        } 
+        }
 
         if (readret == -1)
         {
