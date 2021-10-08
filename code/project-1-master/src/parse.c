@@ -62,4 +62,3 @@ Request * parse(char *buffer, int size, int socketFd) {
     printf("Parsing Failed\n");
 	return NULL;
 }
-
