@@ -1,4 +1,4 @@
-GET/~prs/15-441-F15/ HTTP/1.1
+GET /cp2/liso.static_site/static_site/index.html HTTP/1.1
 Host: www.cs.cmu.edu
 
 
